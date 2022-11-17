@@ -26,6 +26,10 @@ body {
   color: #fff;
   text-align: center;
   padding: 100px;
+  display: block;
+}
+.not-ready {
+  display: none;
 }
 
 .container h1 {

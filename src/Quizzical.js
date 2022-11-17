@@ -4,8 +4,9 @@ import { nanoid } from "nanoid";
 import he from 'he';
 
 export default function Quizzical() {
-    const triviaApi = 'https://opentdb.com/api.php?amount=10&category=22&difficulty=easy&type=multiple'
+    const triviaApi = 'https://opentdb.com/api.php?amount=8&category=22&difficulty=easy&type=multiple'
     const [trivias, setTrivia] = useState([])
+    const [ready, setReady] = useState(false)
     const [correctness, setCorrectness] = useState(0)
     const [checked, setChecked] = useState(false)
 
@@ -28,48 +29,55 @@ export default function Quizzical() {
     }
 
     function newQuizzical() {
-        getNewTrivias()
-        setChecked(false)
-        setCorrectness(0)
+        setReady(false)
+        getNewTrivias().then(data => {
+            setTrivia(data)
+        }).then(() => {
+            setChecked(false)
+            setCorrectness(0)
+            setReady(true)
+            document.body.scrollTop = 0;
+            document.documentElement.scrollTop = 0;
+        })
+
     }
 
     function getNewTrivias() {
-        fetch(triviaApi)
-            .then(response => response.json())
-            .then(data => {
-                setTrivia(() => {
-                    const trivias = []
-                    for(let i=0;i < data.results.length;i++) {
-                        let item = data.results[i];
-                        let incorrect_answers = item.incorrect_answers.map(ans => {
-                            return {
-                                id: nanoid(),
-                                correct: false,
-                                answer: he.decode(ans),
-                                selected: false,
-                            }
-                        })
-                        let suffledOptions = suffle(
-                            [...incorrect_answers, 
-                                {
-                                    id: nanoid(),
-                                    correct: true,
-                                    answer: he.decode(item.correct_answer),
-                                    selected: false,
-                                }
-                            ]
-                        )
-
-                        trivias.push({
-                            questionId: i,
-                            question: he.decode(item.question),
-                            options: suffledOptions,
-                            bingo: false
-                        })
+        let newTrivias = async () => {
+            let response = await fetch(triviaApi)
+            let data = await response.json()
+            const trivias = []
+            for(let i=0;i < data.results.length;i++) {
+                let item = data.results[i];
+                let incorrect_answers = item.incorrect_answers.map(ans => {
+                    return {
+                        id: nanoid(),
+                        correct: false,
+                        answer: he.decode(ans),
+                        selected: false,
                     }
-                    return trivias
                 })
-            })
+                let suffledOptions = suffle(
+                    [...incorrect_answers, 
+                        {
+                            id: nanoid(),
+                            correct: true,
+                            answer: he.decode(item.correct_answer),
+                            selected: false,
+                        }
+                    ]
+                )
+
+                trivias.push({
+                    questionId: i,
+                    question: he.decode(item.question),
+                    options: suffledOptions,
+                    bingo: false
+                })
+            }
+            return trivias
+        }
+        return newTrivias()
     }
 
     function selectOption(questionId, optionId) {
@@ -91,7 +99,12 @@ export default function Quizzical() {
         )
     }
 
-    useEffect(getNewTrivias, [])
+    useEffect(() => {
+        getNewTrivias().then(data => {
+            console.log(data)
+            setTrivia(data)
+        }).then(() => setReady(true))
+    }, [])
 
     const triviaList = trivias.map(trivia => 
         <Trivia key={trivia.questionId} 
@@ -102,16 +115,19 @@ export default function Quizzical() {
     )
     return (
         <main className="container">
-            <section className="quizzical">
-                {triviaList}
-            </section>
-            <section className="result">
-                {checked && <div className="check-result">
-                    You scored {correctness}/{trivias.length} correct answers.
-                    </div>
-                }
-                <button onClick={checked?newQuizzical:checkAnswer} className="check-ans-btn">
-                    {checked?"Play again":"Check answers"}</button>
+            {!ready && <section><h1>...Loading</h1></section>}
+            <section className={ready?"":"not-ready"}>
+                <section className="quizzical">
+                    {triviaList}
+                </section>
+                <section className="result">
+                    {checked && <div className="check-result">
+                        You scored {correctness}/{trivias.length} correct answers.
+                        </div>
+                    }
+                    <button onClick={checked?newQuizzical:checkAnswer} className="check-ans-btn">
+                        {checked?"Play again":"Check answers"}</button>
+                </section>
             </section>
         </main>
     )

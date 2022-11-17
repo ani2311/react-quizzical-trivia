@@ -6,15 +6,34 @@ import he from 'he';
 export default function Quizzical() {
     const triviaApi = 'https://opentdb.com/api.php?amount=10&category=22&difficulty=easy&type=multiple'
     const [trivias, setTrivia] = useState([])
+    const [correctness, setCorrectness] = useState(0)
+    const [checked, setChecked] = useState(false)
+
     function suffle(array) {
         return array.sort(() => Math.random() - 0.5)
     }
 
     function checkAnswer() {
+        let newTrivias = []
+        let correctness = 0
+        for(let i=0;i<trivias.length;i++) {
+            let bingo = trivias[i].options.filter(option => option.selected && option.correct).length > 0
+            newTrivias.push({...trivias[i], bingo: bingo})
+            correctness += bingo?1:0
+        }
 
+        setTrivia(newTrivias)
+        setCorrectness(correctness)
+        setChecked(true)
     }
 
-    useEffect(() => {
+    function newQuizzical() {
+        getNewTrivias()
+        setChecked(false)
+        setCorrectness(0)
+    }
+
+    function getNewTrivias() {
         fetch(triviaApi)
             .then(response => response.json())
             .then(data => {
@@ -27,7 +46,7 @@ export default function Quizzical() {
                                 id: nanoid(),
                                 correct: false,
                                 answer: he.decode(ans),
-                                selected: false
+                                selected: false,
                             }
                         })
                         let suffledOptions = suffle(
@@ -44,33 +63,41 @@ export default function Quizzical() {
                         trivias.push({
                             questionId: i,
                             question: he.decode(item.question),
-                            options: suffledOptions
+                            options: suffledOptions,
+                            bingo: false
                         })
                     }
                     return trivias
                 })
             })
-    }, [])
+    }
 
-    function selectOption(answerId, optionId) {
-        setTrivia(prevTrivas => 
-            prevTrivas.map(trivia => {
-                return {
+    function selectOption(questionId, optionId) {
+        setTrivia(prevTrivias => 
+            prevTrivias.map(trivia => {
+                return trivia.questionId === questionId?{
                     ...trivia,
                     options: trivia.options.map(option => {
                         return option.id === optionId? {
                             ...option,
-                            selected: true
-                        }:option
+                            selected: !option.selected
+                        }: {
+                            ...option,
+                            selected: false
+                        }
                     })
-                }
+                }:trivia
             })
         )
     }
+
+    useEffect(getNewTrivias, [])
+
     const triviaList = trivias.map(trivia => 
         <Trivia key={trivia.questionId} 
                 trivia={trivia} 
                 selectOption={selectOption} 
+                checked={checked}
                 />
     )
     return (
@@ -78,9 +105,13 @@ export default function Quizzical() {
             <section className="quizzical">
                 {triviaList}
             </section>
-            <section>
-                <div className="check-result"></div>
-                <button onClick={checkAnswer} className="check-ans-btn">Check answers</button>
+            <section className="result">
+                {checked && <div className="check-result">
+                    You scored {correctness}/{trivias.length} correct answers.
+                    </div>
+                }
+                <button onClick={checked?newQuizzical:checkAnswer} className="check-ans-btn">
+                    {checked?"Play again":"Check answers"}</button>
             </section>
         </main>
     )

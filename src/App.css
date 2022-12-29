@@ -14,7 +14,8 @@ body {
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: linear-gradient(20deg, rgb(43, 43, 54), rgb(85, 75, 98), rgb(43, 43, 54));
+  background: linear-gradient(20deg, #f1ae0e, #f89933, #f1ae0e);
+  /* rgb(20, 139, 128) */
 }
 
 .App::before {
@@ -36,6 +37,7 @@ body {
   font-size: 5rem;
   font-weight: 700;
   margin: 20px 0;
+  text-shadow: #29868a 5px 5px;
 }
 
 .container h2 {
@@ -46,11 +48,14 @@ body {
 .quizzical {
   margin: auto;
   width: 90%;
+  border-radius: 15px;
+  padding: 0 2rem;
+  color: #fff;
 }
 
 .start-btn, .check-ans-btn {
   color: #fff;
-  background-color: rgb(20, 139, 128);
+  background-color: #dd5a8a;
   margin: 20px 0;
   padding: 15px 60px;
   font-weight: 600;
@@ -60,21 +65,30 @@ body {
   cursor: pointer;
 }
 
+.start-btn:hover, .check-ans-btn:hover {
+  background-color: #dd5a8a;
+  box-shadow: #903153 5px 5px;
+}
+
 .option-btn {
   padding: 10px 30px;
-  background-color: transparent;
-  border: 1px solid rgb(255, 255, 255);
+  background-color: #bdced3ad;
+  border: none;
   border-radius: 50px;
   font-size: 1.3rem;
-  font-weight: 700;
+  /* font-weight: 700; */
   margin: 10px;
-  color: rgb(255, 255, 255);
+  color: #f7f7f7;
   cursor: pointer;
 }
-.option-btn.selected {
-  color: rgb(75 68 87);
-  border: 1px solid rgb(225 183 198);
-  background-color: rgb(225 183 198);
+
+.option-btn:hover {
+  background: #8dacb5ad;
+}
+
+.option-btn.selected, .option-btn.selected:hover {
+  color: rgb(224, 224, 224);
+  background-color: #29868a;
 }
 
 .checked .option-btn.correct {
@@ -95,26 +109,33 @@ body {
   background-color: rgb(144 130 131);
 }
 
-.trivia {
+.trivia{
   text-align: left;
   padding: 30px 0px;
-  border-bottom: 1px solid #aaa;
+  border-bottom: 1px dashed #29868a;
+}
+
+.trivia:last-child {
+  border-bottom: none;
 }
 
 .trivia .question {
   font-weight: 700;
   font-size: 2rem;
   margin: 20px 0;
+  text-shadow: #29868a 3px 3px;
 }
 
 .result {
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-direction: column;
 }
+
 .check-result {
   font-weight: 700;
   font-size: 1.5rem;
   margin: 0 20px;
-  color:rgb(255, 222, 202)
+  color:#fff;
 }

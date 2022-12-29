@@ -119,7 +119,7 @@ export default function Quizzical() {
                     </section>
                     <section className="result">
                         {checked && <div className="check-result">
-                            You scored {correctness}/{trivias.length} correct answers.
+                            You scored {correctness}/{trivias.length} correct answers{correctness>5?"!":"."}
                             </div>
                         }
                         <button onClick={checked?(() => setReady(false)):checkAnswer} 

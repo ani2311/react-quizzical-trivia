@@ -13,7 +13,7 @@ export default function Trivia(props) {
     )
     return (
         <section className={`trivia ${props.checked?"checked":""}`}>
-            <h3 className="question">{props.trivia.question}</h3>
+            <h3 className="question">{props.trivia.questionId+1}. {props.trivia.question}</h3>
             <div>{options}</div>
         </section>
     )

@@ -2,7 +2,6 @@ import { useEffect, useState } from "react"
 import Trivia from './Trivia';
 import { nanoid } from "nanoid";
 import he from 'he';
-import { PropTypes } from "prop-types";
 
 export default function Quizzical() {
     const triviaApi = 'https://opentdb.com/api.php?amount=8&category=22&difficulty=easy&type=multiple'
@@ -28,22 +27,6 @@ export default function Quizzical() {
         setCorrectness(correctness)
         setChecked(true)
     }
-
-    // function newQuizzical() {
-    //     setReady(false)
-    //     getNewTrivias().then(data => {
-    //         setTrivia(data)
-    //     }).then(() => {
-    //         setChecked(false)
-    //         setCorrectness(0)
-    //         setReady(true)
-    //         document.body.scrollTop = 0;
-    //         document.documentElement.scrollTop = 0;
-    //     })
-
-    // }
-
-    
 
     function selectOption(questionId, optionId) {
         setTrivia(prevTrivias => 

@@ -10,7 +10,7 @@ function App() {
   return (
     <div className="App">
       {!start && <Start startHandler={() => setStart(true)}/>}
-      {start && <Quizzical restartHandler={() => setStart(false)}/>}
+      {start && <Quizzical/>}
     </div>
   );
 }

@@ -24,7 +24,7 @@ body {
 }
 
 .container {
-  color: #fff;
+  color: #000;
   text-align: center;
   padding: 100px;
   display: block;
@@ -50,7 +50,7 @@ body {
   width: 90%;
   border-radius: 15px;
   padding: 0 2rem;
-  color: #fff;
+  color: #000;
 }
 
 .start-btn, .check-ans-btn {
@@ -72,7 +72,7 @@ body {
 
 .option-btn {
   padding: 10px 30px;
-  background-color: #bdced3ad;
+  background-color: #8dacb5ad;
   border: none;
   border-radius: 50px;
   font-size: 1.3rem;
@@ -83,7 +83,7 @@ body {
 }
 
 .option-btn:hover {
-  background: #8dacb5ad;
+  background: #5a7177ad;
 }
 
 .option-btn.selected, .option-btn.selected:hover {
@@ -123,7 +123,7 @@ body {
   font-weight: 700;
   font-size: 2rem;
   margin: 20px 0;
-  text-shadow: #29868a 3px 3px;
+  text-shadow: #f3692f 3px 3px 2px;
 }
 
 .result {

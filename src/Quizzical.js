@@ -11,12 +11,10 @@ export default function Quizzical() {
     const [checked, setChecked] = useState(false)
 
     function suffle(array) {
-        /* suffle the array */
         return array.sort(() => Math.random() - 0.5)
     }
 
     function checkAnswer() {
-        /* check answer and update the quizzical game */
         let newTrivias = []
         let correctness = 0
         for(let i=0;i<trivias.length;i++) {
@@ -28,60 +26,6 @@ export default function Quizzical() {
         setTrivia(newTrivias)
         setCorrectness(correctness)
         setChecked(true)
-    }
-
-    function newQuizzical() {
-        /* create a new quizzical game */
-        setReady(false)
-        getNewTrivias().then(data => {
-            setTrivia(data)
-        }).then(() => {
-            setChecked(false)
-            setCorrectness(0)
-            setReady(true)
-            document.body.scrollTop = 0;
-            document.documentElement.scrollTop = 0;
-        })
-
-    }
-
-    function getNewTrivias() {
-        /* fetch trivias and process */
-        let newTrivias = async () => {
-            let response = await fetch(triviaApi)
-            let data = await response.json()
-            const trivias = []
-            for(let i=0;i < data.results.length;i++) {
-                let item = data.results[i];
-                let incorrect_answers = item.incorrect_answers.map(ans => {
-                    return {
-                        id: nanoid(),
-                        correct: false,
-                        answer: he.decode(ans),
-                        selected: false,
-                    }
-                })
-                let suffledOptions = suffle(
-                    [...incorrect_answers, 
-                        {
-                            id: nanoid(),
-                            correct: true,
-                            answer: he.decode(item.correct_answer),
-                            selected: false,
-                        }
-                    ]
-                )
-
-                trivias.push({
-                    questionId: i,
-                    question: he.decode(item.question),
-                    options: suffledOptions,
-                    bingo: false
-                })
-            }
-            return trivias
-        }
-        return newTrivias()
     }
 
     function selectOption(questionId, optionId) {
@@ -103,11 +47,59 @@ export default function Quizzical() {
         )
     }
 
-    // useEffect(() => {
-    //     getNewTrivias().then(data => {
-    //         setTrivia(data)
-    //     }).then(() => setReady(true))
-    // })
+    useEffect(() => {
+        if(!ready) {
+            function getNewTrivias() {
+                console.log('get trivial')
+                let newTrivias = async () => {
+                    let response = await fetch(triviaApi)
+                    let data = await response.json()
+                    const trivias = []
+                    for(let i=0;i < data.results.length;i++) {
+                        let item = data.results[i];
+                        let incorrect_answers = item.incorrect_answers.map(ans => {
+                            return {
+                                id: nanoid(),
+                                correct: false,
+                                answer: he.decode(ans),
+                                selected: false,
+                            }
+                        })
+                        let suffledOptions = suffle(
+                            [...incorrect_answers, 
+                                {
+                                    id: nanoid(),
+                                    correct: true,
+                                    answer: he.decode(item.correct_answer),
+                                    selected: false,
+                                }
+                            ]
+                        )
+        
+                        trivias.push({
+                            questionId: i,
+                            question: he.decode(item.question),
+                            options: suffledOptions,
+                            bingo: false
+                        })
+                    }
+                    return trivias
+                }
+                return newTrivias()
+            }
+            getNewTrivias().then(data => {
+                console.log(data)
+
+                setTrivia(data)
+            }).then(() => {
+                setChecked(false)
+                setCorrectness(0)
+                setReady(true)
+                document.body.scrollTop = 0;
+                document.documentElement.scrollTop = 0;
+            })
+        }
+    }, [ready])
 
     const triviaList = trivias.map(trivia => 
         <Trivia key={trivia.questionId} 
@@ -118,21 +110,24 @@ export default function Quizzical() {
     )
     return (
         <main className="container">
-            {!ready && <section><h1>...Loading</h1></section>}
-            <section className={ready?"":"not-ready"}>
-                <section className="quizzical">
-                    {triviaList}
+
+            {!ready && <section><h1>Loading......</h1></section>}
+            {ready && (
+                <section>
+                    <section className="quizzical">
+                        {triviaList}
+                    </section>
+                    <section className="result">
+                        {checked && <div className="check-result">
+                            You scored {correctness}/{trivias.length} correct answers.
+                            </div>
+                        }
+                        <button onClick={checked?(() => setReady(false)):checkAnswer} 
+                                className="check-ans-btn">
+                            {checked?"Play again":"Check answers"}</button>
+                    </section>
                 </section>
-                <section className="result">
-                    {checked && <div className="check-result">
-                        You scored {correctness}/{trivias.length} correct answers.
-                        </div>
-                    }
-                    <button onClick={checked?newQuizzical:checkAnswer} 
-                            className="check-ans-btn">
-                        {checked?"Play again":"Check answers"}</button>
-                </section>
-            </section>
+            )}
         </main>
     )
 }

@@ -11,10 +11,12 @@ export default function Quizzical() {
     const [checked, setChecked] = useState(false)
 
     function suffle(array) {
+        /* suffle the array */
         return array.sort(() => Math.random() - 0.5)
     }
 
     function checkAnswer() {
+        /* check answer and update the quizzical game */
         let newTrivias = []
         let correctness = 0
         for(let i=0;i<trivias.length;i++) {
@@ -29,6 +31,7 @@ export default function Quizzical() {
     }
 
     function newQuizzical() {
+        /* create a new quizzical game */
         setReady(false)
         getNewTrivias().then(data => {
             setTrivia(data)
@@ -43,6 +46,7 @@ export default function Quizzical() {
     }
 
     function getNewTrivias() {
+        /* fetch trivias and process */
         let newTrivias = async () => {
             let response = await fetch(triviaApi)
             let data = await response.json()
@@ -99,12 +103,11 @@ export default function Quizzical() {
         )
     }
 
-    useEffect(() => {
-        getNewTrivias().then(data => {
-            console.log(data)
-            setTrivia(data)
-        }).then(() => setReady(true))
-    }, [])
+    // useEffect(() => {
+    //     getNewTrivias().then(data => {
+    //         setTrivia(data)
+    //     }).then(() => setReady(true))
+    // })
 
     const triviaList = trivias.map(trivia => 
         <Trivia key={trivia.questionId} 
@@ -125,7 +128,8 @@ export default function Quizzical() {
                         You scored {correctness}/{trivias.length} correct answers.
                         </div>
                     }
-                    <button onClick={checked?newQuizzical:checkAnswer} className="check-ans-btn">
+                    <button onClick={checked?newQuizzical:checkAnswer} 
+                            className="check-ans-btn">
                         {checked?"Play again":"Check answers"}</button>
                 </section>
             </section>

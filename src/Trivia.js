@@ -1,6 +1,9 @@
 // import {useState} from 'react';
+import PropTypes from 'prop-types';
 
 export default function Trivia(props) {
+
+
 
     const options = props.trivia.options.map(option => 
         <button className={`option-btn ${props.checked && option.correct?"correct":""} ${option.selected?"selected":""}`} 
@@ -14,4 +17,11 @@ export default function Trivia(props) {
             <div>{options}</div>
         </section>
     )
+}
+
+Trivia.propTypes = {
+    key: PropTypes.number,
+    trivia: PropTypes.object,
+    selectOption: PropTypes.func,
+    checked: PropTypes.bool
 }
